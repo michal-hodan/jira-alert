@@ -1,0 +1,38 @@
+<resources>
+
+    <string name="welcome_introduction_label">Hello and Welcome to JIRA Alert</string>
+    <string name="welcome_introduction_text">
+        First things first, they told me that I have to warn you,
+        so by proceeding you are agreeing with not suing me, cause this is a Early Access
+        (look at some steam games, they\'re doing much worse job at not sucking)
+        also little side note if you are reading this then you are reading this.
+    </string>
+    <string name="welcome_introduction_logo_description">JIRA logo</string>
+
+
+    <string name="welcome_explanation_title">
+        Your JIRA domain
+    </string>
+    <string name="welcome_explanation_text">
+        There\'s a one little step before you can playing with your brand new (working) app.
+    It is this one, nothing fancy about it, so go swipe and enjoy
+    </string>
+    <string name="welcome_explanation_url">
+        Please enter the domain on which your JIRA system can be (preferred publicly) accessed
+    </string>
+    <string name="welcome_explanation_url_hint">
+        Your JIRA domain
+    </string>
+    <string name="welcome_explanation_submit">
+        Submit
+    </string>
+
+    <string name="welcome_login_title">Authentication</string>
+
+    <string name="welcome_login_label">
+        Due to unfortunate events, commonly referred as authentication, we need you to login to your JIRA account
+    </string>
+    <string name="welcome_login_username_hint">Username</string>
+    <string name="welcome_login_password_hint">Password</string>
+    <string name="welcome_login_button">Login</string>
+</resources>
