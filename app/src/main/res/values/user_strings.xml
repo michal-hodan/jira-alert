@@ -1,0 +1,5 @@
+<resources>
+
+    <string name="user_display_name">JIRA Display Name</string>
+    <string name="user_email">email@placeholder.com</string>
+</resources>
