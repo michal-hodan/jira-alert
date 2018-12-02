@@ -12,8 +12,10 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.github.michalhodan.jiraalert.database.Database
 import com.github.michalhodan.jiraalert.database.User as UserEntity
+import com.github.michalhodan.jiraalert.database.Board as BoardEntity
 import com.github.michalhodan.jiraalert.storage.UrlImage
 import com.github.michalhodan.jiraalert.storage.JIRADataViewModel
 import com.github.michalhodan.jiraalert.storage.JIRADataViewModelFactory
@@ -22,6 +24,8 @@ import kotlinx.android.synthetic.main.app_bar_user.*
 import kotlinx.android.synthetic.main.nav_header_user.*
 
 class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private lateinit var viewModel: JIRADataViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,22 +43,10 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Database.bootstrap(applicationContext)
         JIRADataViewModelFactory.bootstrap(url, authToken)
 
-        val viewModel = ViewModelProviders
+
+        viewModel = ViewModelProviders
             .of(this, JIRADataViewModelFactory())
             .get(JIRADataViewModel::class.java)
-
-        viewModel.user().observe(this, Observer<UserEntity>{
-            if (it == null) {
-                return@Observer
-            }
-            nav_email.text = it.email
-            nav_display_name.text = it.displayName
-
-            UrlImage(this, "user.png").image(it.avatarUrl) { bitmap ->
-                user_image.setImageBitmap(bitmap)
-            }
-        })
-
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -79,6 +71,25 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        viewModel.user().observe(this, Observer<UserEntity> {
+            it ?: return@Observer
+
+            nav_email.text = it.email
+            nav_display_name.text = it.displayName
+
+            UrlImage(this, "user.png").image(it.avatarUrl) { bitmap ->
+                user_image.setImageBitmap(bitmap)
+            }
+        })
+
+        viewModel.boards().observe(this, Observer<Map<Int, BoardEntity>> {
+            it ?: return@Observer
+
+            it.forEach { index, board ->
+                nav_view.menu.add(0, board.id, index, board.name)
+            }
+        })
+
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.user, menu)
         return true
@@ -95,27 +106,11 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_camera -> {
-                // Handle the camera action
-            }
-            R.id.nav_gallery -> {
+        viewModel.boards().observe(this, Observer<Map<Int, BoardEntity>> {
+            val selected = it?.get(item.itemId) ?: return@Observer
 
-            }
-            R.id.nav_slideshow -> {
-
-            }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
-        }
+            Toast.makeText(baseContext, "selected ${selected.name}", Toast.LENGTH_SHORT).show()
+        })
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true

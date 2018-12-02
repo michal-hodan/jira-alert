@@ -4,9 +4,9 @@ import android.arch.persistence.room.*
 
 @Entity
 data class User (
-    @PrimaryKey var email: String,
-    @ColumnInfo(name = "display_name") var displayName: String,
-    @ColumnInfo(name = "avatar_url") var avatarUrl: String
+    @PrimaryKey val email: String,
+    @ColumnInfo(name = "display_name") val displayName: String,
+    @ColumnInfo(name = "avatar_url") val avatarUrl: String
 )
 
 @Dao
@@ -17,6 +17,6 @@ interface UserDao {
     @Insert
     fun insert(user: User)
 
-    @Delete
-    fun delete(user: User)
+    @Query("DELETE FROM user")
+    fun wipe()
 }

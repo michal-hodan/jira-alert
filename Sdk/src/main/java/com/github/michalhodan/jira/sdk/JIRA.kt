@@ -4,13 +4,14 @@ import com.github.michalhodan.jira.sdk.http.ApiClient
 import com.github.michalhodan.jira.sdk.http.Client
 import com.github.michalhodan.jira.sdk.parser.JsonParser
 import com.github.michalhodan.jira.sdk.parser.Parser
+import com.github.michalhodan.jira.sdk.rest.agile.Board
 import com.github.michalhodan.jira.sdk.rest.api.Myself
 
-class JIRA private constructor(client: Client, parser: Parser) {
+class JIRA private constructor(private val client: Client, private val parser: Parser) {
 
-    val myself by lazy {
-        Myself(client, parser)
-    }
+    val myself get() = Myself(client, parser)
+
+    val boards get() = Board(client, parser)
 
 
     companion object {
