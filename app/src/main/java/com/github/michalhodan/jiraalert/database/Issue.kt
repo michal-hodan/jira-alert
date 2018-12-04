@@ -2,6 +2,8 @@ package com.github.michalhodan.jiraalert.database
 
 import android.arch.persistence.room.*
 
+typealias IssueEntity = Issue
+
 @Entity
 data class Issue(
     @PrimaryKey val id: Int,

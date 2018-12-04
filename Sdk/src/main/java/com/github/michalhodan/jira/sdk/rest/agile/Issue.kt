@@ -23,7 +23,13 @@ class Issue(client: Client, parser: Parser) : Rest.Agile(client, parser) {
         data class Issue(
             val issuetype: IssueType.Response,
             val project: Project.Response,
-            val priority: Priority.Response
-        )
+            val priority: Priority.Response,
+            val summary : String,
+            val assignee: Assignee
+        ) {
+            data class Assignee(
+                val name: String
+            )
+        }
     }
 }

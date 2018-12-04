@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -120,13 +121,18 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 viewModel.issues(board.id, sprint.id).observe(this, Observer<Map<Int, IssueEntity>>IssueObserver@ {
                     val issues = it ?: return@IssueObserver
 
+
                     issues.forEach {
-                        val view = TextView(this).apply {
-                            id = it.value.id
-                            text = it.value.key
-                            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
-                        }
-                        linear_layout.addView(view)
+//                        val view = TextView(this).apply {
+//                            id = it.value.id
+//                            text = it.value.key
+//                            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+//                        }
+//                        R.layout.content_tile
+                           val v = TileView(baseContext, it.value)
+
+                        linear_layout.addView(v)
+
 //                        Toast.makeText(baseContext, "${it.value.key}", Toast.LENGTH_SHORT).show()
                     }
                 })
