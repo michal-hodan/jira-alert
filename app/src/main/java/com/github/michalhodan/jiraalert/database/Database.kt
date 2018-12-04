@@ -6,12 +6,16 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import com.github.michalhodan.jiraalert.database.Database as AppDatabase
 
-@Database(entities = [User::class, Board::class], version = 1)
+@Database(entities = [User::class, Board::class, Sprint::class, Issue::class], version = 1)
 abstract class Database : RoomDatabase() {
 
     abstract fun user(): UserDao
 
-    abstract fun boards(): BoardsDao
+    abstract fun issue(): IssueDao
+
+    abstract fun board(): BoardsDao
+
+    abstract fun sprint(): SprintDao
 
     companion object {
         private const val DATABASE_NAME = "jira-alert"

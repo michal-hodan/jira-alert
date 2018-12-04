@@ -2,13 +2,16 @@ package com.github.michalhodan.jira.sdk.rest.agile
 
 import com.github.michalhodan.jira.sdk.rest.Rest
 import com.github.michalhodan.jira.sdk.http.Client
+import com.github.michalhodan.jira.sdk.http.Request
 import com.github.michalhodan.jira.sdk.parser.Parser
 
-class Sprint(client: Client, parser: Parser, board: Board.Response): Rest.Agile(client, parser) {
+class Sprint(client: Client, parser: Parser): Rest.Agile(client, parser) {
 
-    override val endpoint = "board/${board.id}/sprint"
+    override val endpoint = "board"
 
-    suspend fun all() = client.get().deserialize<List>()
+    suspend fun all(boardId: Int) = client
+        .request(Request.get("$path/$boardId/sprint"))
+        .deserialize<List>()
 
     data class List(val values: kotlin.collections.List<Response>)
 

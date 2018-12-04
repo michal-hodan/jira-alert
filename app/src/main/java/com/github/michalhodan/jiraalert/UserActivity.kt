@@ -10,17 +10,23 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import com.github.michalhodan.jiraalert.database.Database
 import com.github.michalhodan.jiraalert.database.User as UserEntity
+import com.github.michalhodan.jiraalert.database.Issue as IssueEntity
 import com.github.michalhodan.jiraalert.database.Board as BoardEntity
+import com.github.michalhodan.jiraalert.database.Sprint as SprintEntity
 import com.github.michalhodan.jiraalert.storage.UrlImage
 import com.github.michalhodan.jiraalert.storage.JIRADataViewModel
 import com.github.michalhodan.jiraalert.storage.JIRADataViewModelFactory
 import kotlinx.android.synthetic.main.activity_user.*
 import kotlinx.android.synthetic.main.app_bar_user.*
+import kotlinx.android.synthetic.main.content_user.*
 import kotlinx.android.synthetic.main.nav_header_user.*
 
 class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -42,7 +48,6 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         Database.bootstrap(applicationContext)
         JIRADataViewModelFactory.bootstrap(url, authToken)
-
 
         viewModel = ViewModelProviders
             .of(this, JIRADataViewModelFactory())
@@ -107,9 +112,27 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         viewModel.boards().observe(this, Observer<Map<Int, BoardEntity>> {
-            val selected = it?.get(item.itemId) ?: return@Observer
+            val board = it?.get(item.itemId) ?: return@Observer
 
-            Toast.makeText(baseContext, "selected ${selected.name}", Toast.LENGTH_SHORT).show()
+            viewModel.sprints(board.id).observe(this,  Observer<Map<Int, SprintEntity>>SprintObserver@{
+                val sprint = it?.get(48) ?: return@SprintObserver
+
+                viewModel.issues(board.id, sprint.id).observe(this, Observer<Map<Int, IssueEntity>>IssueObserver@ {
+                    val issues = it ?: return@IssueObserver
+
+                    issues.forEach {
+                        val view = TextView(this).apply {
+                            id = it.value.id
+                            text = it.value.key
+                            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+                        }
+                        linear_layout.addView(view)
+//                        Toast.makeText(baseContext, "${it.value.key}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            })
+
+            Toast.makeText(baseContext, "selected ${board.name}", Toast.LENGTH_SHORT).show()
         })
 
         drawer_layout.closeDrawer(GravityCompat.START)

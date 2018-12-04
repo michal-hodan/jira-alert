@@ -30,7 +30,5 @@ sealed class Rest(protected val client: Client, protected val parser: Parser) {
 
     protected suspend fun Client.post() = request(Request.post(path))
 
-    protected suspend fun Client.get(id: Int) = request(Request.get("$path/$id"))
-
     protected inline fun <reified T : Any> Response.deserialize() = parser.deserialize(body, T::class)
 }

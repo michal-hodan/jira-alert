@@ -2,13 +2,16 @@ package com.github.michalhodan.jira.sdk.rest.agile
 
 import com.github.michalhodan.jira.sdk.rest.Rest
 import com.github.michalhodan.jira.sdk.http.Client
+import com.github.michalhodan.jira.sdk.http.Request
 import com.github.michalhodan.jira.sdk.parser.Parser
 
-class Configuration(client: Client, parser: Parser, board: Board.Response) : Rest.Agile(client, parser) {
+class Configuration(client: Client, parser: Parser) : Rest.Agile(client, parser) {
 
-    override val endpoint = "board/${board.id}/configuration"
+    override val endpoint = "board"
 
-    suspend fun get() = client.get().deserialize<Response>()
+    suspend fun get(boardId: Int) = client
+        .request(Request.get("$path/$boardId/configuration"))
+        .deserialize<Response>()
 
     data class Response(
         val id: Int,
