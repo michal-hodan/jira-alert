@@ -10,13 +10,8 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import com.github.michalhodan.jiraalert.database.Database
 import com.github.michalhodan.jiraalert.database.User as UserEntity
 import com.github.michalhodan.jiraalert.database.Issue as IssueEntity
@@ -42,12 +37,14 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val preferences = getSharedPreferences("AUTHENTICATION", Context.MODE_PRIVATE)
         val url = preferences.getString("url", null)
         val authToken = preferences.getString("authToken", null)
-        if (url == null || authToken == null) {
+        val username = preferences.getString("username", null)
+        if (url == null || authToken == null || username == null) {
             startActivity(Intent(this, WelcomeActivity::class.java))
             return
         }
 
         Database.bootstrap(applicationContext)
+        Database.dropDatabase()
         JIRADataViewModelFactory.bootstrap(url, authToken)
 
         viewModel = ViewModelProviders
@@ -77,13 +74,15 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        viewModel.user().observe(this, Observer<UserEntity> {
+        val username = getSharedPreferences("AUTHENTICATION", Context.MODE_PRIVATE)
+            .getString("username", null)!!
+        viewModel.user(username).observe(this, Observer<UserEntity> {
             it ?: return@Observer
 
             nav_email.text = it.email
             nav_display_name.text = it.displayName
 
-            UrlImage(this, "user.png").image(it.avatarUrl) { bitmap ->
+            UrlImage.user(this).apply { scale = 128 }.image(it.avatarUrl) { bitmap ->
                 user_image.setImageBitmap(bitmap)
             }
         })
@@ -112,33 +111,17 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        viewModel.boards().observe(this, Observer<Map<Int, BoardEntity>> {
-            val board = it?.get(item.itemId) ?: return@Observer
+        viewModel.boardIssueDataOfActiveSprint(item.itemId).observe(this, Observer {
+            val configuration = it?.first ?: return@Observer
+            val dataList = it.second
 
-            viewModel.sprints(board.id).observe(this,  Observer<Map<Int, SprintEntity>>SprintObserver@{
-                val sprint = it?.get(48) ?: return@SprintObserver
-
-                viewModel.issues(board.id, sprint.id).observe(this, Observer<Map<Int, IssueEntity>>IssueObserver@ {
-                    val issues = it ?: return@IssueObserver
-
-
-                    issues.forEach {
-//                        val view = TextView(this).apply {
-//                            id = it.value.id
-//                            text = it.value.key
-//                            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
-//                        }
-//                        R.layout.content_tile
-                           val v = TileView(baseContext, it.value)
-
-                        linear_layout.addView(v)
-
-//                        Toast.makeText(baseContext, "${it.value.key}", Toast.LENGTH_SHORT).show()
-                    }
-                })
-            })
-
-            Toast.makeText(baseContext, "selected ${board.name}", Toast.LENGTH_SHORT).show()
+            configuration.columns.forEach { column ->
+                linear_layout.addView(TilesView(this, column, dataList.filter { tileData ->
+                    column.statuses.find {
+                        it == tileData.issue.statusId
+                    }?.let { true } ?: false
+                }))
+            }
         })
 
         drawer_layout.closeDrawer(GravityCompat.START)

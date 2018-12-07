@@ -16,7 +16,7 @@ class JIRA private constructor(private val client: Client, private val parser: P
 
     val boards get() = Board(client, parser)
 
-    val boardConfiguration get() = Configuration(client, parser)
+    val configuration get() = Configuration(client, parser)
 
     val sprint get() = Sprint(client, parser)
 

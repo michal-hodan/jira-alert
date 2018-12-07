@@ -3,6 +3,7 @@ package com.github.michalhodan.jira.sdk.rest.api
 import com.github.michalhodan.jira.sdk.rest.Rest
 import com.github.michalhodan.jira.sdk.http.Client
 import com.github.michalhodan.jira.sdk.parser.Parser
+import com.github.michalhodan.jira.sdk.rest.response.AvatarUrl
 
 class Myself(client: Client, parser: Parser): Rest.Api(client, parser) {
 
@@ -17,12 +18,5 @@ class Myself(client: Client, parser: Parser): Rest.Api(client, parser) {
         val locale: String,
         val timeZone: String,
         val avatarUrls: AvatarUrl
-    ) {
-        data class AvatarUrl(
-            val `48x48`: String,
-            val `32x32`: String,
-            val `24x24`: String,
-            val `16x16`: String
-        )
-    }
+    )
 }

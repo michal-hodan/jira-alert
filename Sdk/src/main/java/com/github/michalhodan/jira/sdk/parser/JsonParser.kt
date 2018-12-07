@@ -7,6 +7,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class JsonParser private constructor(private val mapper: ObjectMapper): Parser {
 
+    override fun <T : Any> deserialize(data: String, `class`: KClass<T>): T = mapper.readValue(data, `class`.java)
+
     companion object {
         private val instance = jacksonObjectMapper()
 
@@ -15,9 +17,5 @@ class JsonParser private constructor(private val mapper: ObjectMapper): Parser {
         }
 
         fun newInstance() = JsonParser(instance)
-    }
-
-    override fun <T : Any> deserialize(data: String, `class`: KClass<T>): T {
-        return mapper.readValue(data, `class`.java)
     }
 }

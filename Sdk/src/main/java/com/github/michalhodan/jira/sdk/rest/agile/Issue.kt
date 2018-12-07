@@ -4,6 +4,7 @@ import com.github.michalhodan.jira.sdk.rest.Rest
 import com.github.michalhodan.jira.sdk.http.Client
 import com.github.michalhodan.jira.sdk.http.Request
 import com.github.michalhodan.jira.sdk.parser.Parser
+import com.github.michalhodan.jira.sdk.rest.response.*
 
 class Issue(client: Client, parser: Parser) : Rest.Agile(client, parser) {
 
@@ -21,15 +22,13 @@ class Issue(client: Client, parser: Parser) : Rest.Agile(client, parser) {
         val fields: Issue
     ) {
         data class Issue(
-            val issuetype: IssueType.Response,
-            val project: Project.Response,
-            val priority: Priority.Response,
+            val issuetype: IssueType,
+            val project: Project,
+            val priority: Priority,
+            val customfield_10006: Float?,
             val summary : String,
-            val assignee: Assignee
-        ) {
-            data class Assignee(
-                val name: String
-            )
-        }
+            val assignee: Assignee,
+            val status: Status
+        )
     }
 }

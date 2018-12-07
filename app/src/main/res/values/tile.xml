@@ -1,4 +1,8 @@
 <resources>
+
+    <string name="tiles_column_name">COLUMN NAME</string>
+
+
     <declare-styleable name="TileView">
         <attr name="issueKey" format="string" />
         <attr name="summary" format="string" />

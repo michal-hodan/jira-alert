@@ -15,6 +15,7 @@ import com.github.michalhodan.jira.sdk.Credentials
 import com.github.michalhodan.jira.sdk.JIRA
 import com.github.michalhodan.jira.sdk.http.HttpException
 import kotlinx.android.synthetic.main.fragment_welcome_login.*
+import kotlinx.android.synthetic.main.nav_header_user.*
 import kotlinx.coroutines.*
 
 /**
@@ -73,6 +74,7 @@ class WelcomeLoginFragment : Fragment() {
                 activity?.getSharedPreferences("AUTHENTICATION", Context.MODE_PRIVATE)!!.edit().apply {
                     putString("url", credentials.url)
                     putString("authToken", credentials.authToken)
+                    putString("username", username)
                     apply()
                 }
 
