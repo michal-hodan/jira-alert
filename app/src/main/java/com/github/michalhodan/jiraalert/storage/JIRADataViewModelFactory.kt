@@ -8,8 +8,13 @@ import com.github.michalhodan.jiraalert.database.Database
 
 class JIRADataViewModelFactory: ViewModelProvider.NewInstanceFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>) =
-        JIRADataViewModel(JIRA.rest(Credentials.HttpAuth(url, authToken)), Database.instance) as T
+    override fun <T : ViewModel?> create(modelClass: Class<T>) = when(modelClass) {
+        JIRADataViewModel::class.java ->
+            JIRADataViewModel(JIRA.rest(Credentials.HttpAuth(url, authToken)), Database.instance) as T
+        JIRAIssueDataViewModel::class.java ->
+            JIRAIssueDataViewModel(JIRA.rest(Credentials.HttpAuth(url, authToken)), Database.instance) as T
+        else -> throw Exception("Unknown model class $modelClass")
+    }
 
     companion object {
         private lateinit var url: String

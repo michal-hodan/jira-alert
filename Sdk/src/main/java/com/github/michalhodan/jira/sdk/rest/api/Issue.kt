@@ -1,20 +1,19 @@
-package com.github.michalhodan.jira.sdk.rest.agile
+package com.github.michalhodan.jira.sdk.rest.api
 
-import com.github.michalhodan.jira.sdk.rest.Rest
 import com.github.michalhodan.jira.sdk.http.Client
 import com.github.michalhodan.jira.sdk.http.Request
 import com.github.michalhodan.jira.sdk.parser.Parser
+import com.github.michalhodan.jira.sdk.rest.Rest
 import com.github.michalhodan.jira.sdk.rest.response.*
+import com.github.michalhodan.jira.sdk.rest.response.IssueType
 
-class Issue(client: Client, parser: Parser) : Rest.Agile(client, parser) {
+class Issue(client: Client, parser: Parser): Rest.Api(client, parser) {
 
-    override val endpoint = "board"
+    override val endpoint = "issue"
 
-    suspend fun all(boardIt: Int, sprintId: Int) = client
-        .request(Request.get("$path/$boardIt/sprint/$sprintId/issue"))
-        .deserialize<List>()
-
-    data class List(val issues: kotlin.collections.List<Response>)
+    suspend fun detail(id: Int) = client
+        .request(Request.get("$path/$id"))
+        .deserialize<Response>()
 
     data class Response(
         val id: Int,

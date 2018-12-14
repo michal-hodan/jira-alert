@@ -16,11 +16,15 @@ class TilesView(context: Context, attrs: AttributeSet?): LinearLayout(context, a
             .inflate(R.layout.content_tiles, this, true)
     }
 
-    constructor(activity: Activity, column: Column, tiles: List<TileData>): this(activity.applicationContext, null) {
+    constructor(activity: Activity, column: Column, tiles: List<TileData>, issueSelector: (TileData) -> Unit): this(activity.applicationContext, null) {
         column_name.text = column.name
 
-        tiles.forEach {
-            tiles_layout.addView(TileView(activity, it))
+        tiles.forEach { tileData ->
+            val tile = TileView(activity, tileData)
+            tile.setOnClickListener {
+                issueSelector(tileData)
+            }
+            tiles_layout.addView(tile)
         }
     }
 }

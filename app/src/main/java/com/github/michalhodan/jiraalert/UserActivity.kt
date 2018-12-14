@@ -114,13 +114,17 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         viewModel.boardIssueDataOfActiveSprint(item.itemId).observe(this, Observer {
             val configuration = it?.first ?: return@Observer
             val dataList = it.second
-
             configuration.columns.forEach { column ->
-                linear_layout.addView(TilesView(this, column, dataList.filter { tileData ->
-                    column.statuses.find {
-                        it == tileData.issue.statusId
+                val current = dataList.filter { tileData ->
+                    column.statuses.find {statusId ->
+                        statusId == tileData.issue.statusId
                     }?.let { true } ?: false
-                }))
+                }
+                val view = TilesView(this, column, current) { tileData ->
+                    TileDialog.create(this, tileData).show()
+                }
+
+                linear_layout.addView(view)
             }
         })
 

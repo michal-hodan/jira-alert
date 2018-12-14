@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import android.widget.Toast
 import com.github.michalhodan.jiraalert.database.IssueEntity
 import com.github.michalhodan.jiraalert.storage.TileData
 import com.github.michalhodan.jiraalert.storage.UrlImage

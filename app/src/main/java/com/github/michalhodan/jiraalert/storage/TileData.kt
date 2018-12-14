@@ -7,5 +7,6 @@ data class TileData(
     val project: Project,
     val priority: Priority,
     val issueType: IssueType,
-    val assignee: User
+    val assignee: User,
+    val creator: User
 )

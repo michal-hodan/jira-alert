@@ -24,4 +24,13 @@
 
     <color name="tile_story_points">#61000000</color>
 
+    <string name="tile_select_action">
+        Select action
+    </string>
+    <string-array name="tile_select_actions">
+        <item>Detail</item>
+        <item>Move</item>
+        <item>Refresh</item>
+    </string-array>
+
 </resources>

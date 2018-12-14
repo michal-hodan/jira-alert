@@ -44,6 +44,7 @@ data class Issue(
     val summary: String,
     @ColumnInfo(name = "story_points") val storyPoints: Int?,
     @ColumnInfo(name = "assignee_name") val assignee: String,
+    @ColumnInfo(name = "creator_name") val creator: String,
     @ColumnInfo(name = "issue_type_id") var issueTypeId: Int,
     @ColumnInfo(name = "project_id") var projectId: Int,
     @ColumnInfo(name = "priority_id") var priorityId: Int,
@@ -52,6 +53,9 @@ data class Issue(
 
 @Dao
 interface IssueDao {
+
+    @Query("SELECT * FROM Issue WHERE id = :id LIMIT 1")
+    fun findById(id: Int): Issue?
 
     @Query("SELECT * FROM Issue WHERE board_id = :boardId AND sprint_id = :sprintId")
     fun boardSprintIssues(boardId: Int, sprintId: Int): List<Issue>

@@ -97,10 +97,10 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
             val data = with(database.issue()) {
                 boardSprintIssues(board.id, sprint.id).takeIf {
                     it.isNotEmpty()
-                } ?: jira.issue.all(board.id, sprint.id).issues.map {
+                } ?: jira.agileIssue.all(board.id, sprint.id).issues.map {
                     val storyPoints = it.fields.customfield_10006?.toInt()
 
-                    IssueEntity(it.id, board.id, sprint.id, it.key, it.fields.summary, storyPoints, it.fields.assignee.name, it.fields.issuetype.id, it.fields.project.id, it.fields.priority.id, it.fields.status.id)
+                    IssueEntity(it.id, board.id, sprint.id, it.key, it.fields.summary, storyPoints, it.fields.assignee.name, it.fields.creator.name, it.fields.issuetype.id, it.fields.project.id, it.fields.priority.id, it.fields.status.id)
                 }.also { insertAll(it) }
             }
             issueData.postValue(data.associate {
@@ -132,7 +132,7 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
             val issues =  with(database.issue()) {
                 boardSprintIssues(boardId, activeSprint.id).takeIf {
                     it.isNotEmpty()
-                } ?: jira.issue.all(boardId, activeSprint.id).issues.map {
+                } ?: jira.agileIssue.all(boardId, activeSprint.id).issues.map {
 
                     database.issueType().insert(
                         IssueType(it.fields.issuetype.id, it.fields.issuetype.name, it.fields.issuetype.iconUrl)
@@ -146,10 +146,13 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
                     database.user().insert(
                         UserEntity(it.fields.assignee.name, it.fields.assignee.emailAddress, it.fields.assignee.displayName, it.fields.assignee.avatarUrls.`48x48`)
                     )
+                    database.user().insert(
+                        UserEntity(it.fields.creator.name, it.fields.creator.emailAddress, it.fields.creator.displayName, it.fields.creator.avatarUrls.`48x48`)
+                    )
 
                     val storyPoints = it.fields.customfield_10006?.toInt()
 
-                IssueEntity(it.id, boardId, activeSprint.id, it.key, it.fields.summary, storyPoints, it.fields.assignee.name, it.fields.issuetype.id, it.fields.project.id, it.fields.priority.id, it.fields.status.id)
+                IssueEntity(it.id, boardId, activeSprint.id, it.key, it.fields.summary, storyPoints, it.fields.assignee.name, it.fields.creator.name, it.fields.issuetype.id, it.fields.project.id, it.fields.priority.id, it.fields.status.id)
 
                 }.also { insertAll(it) }
             }
@@ -160,7 +163,8 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
                     database.project().retrieve(it.projectId)!!,
                     database.priority().retrieve(it.priorityId)!!,
                     database.issueType().retrieve(it.issueTypeId)!!,
-                    database.user().retrieve(it.assignee)!!
+                    database.user().retrieve(it.assignee)!!,
+                    database.user().retrieve(it.creator)!!
                 )
             })
         }
