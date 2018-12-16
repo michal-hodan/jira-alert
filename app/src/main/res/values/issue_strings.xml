@@ -1,0 +1,7 @@
+<resources>
+    <string name="issue_key">ISSUE-KEY</string>
+    <string name="issue_task_type_description">task type</string>
+    <string name="issue_task_type">task type</string>
+    <string name="issue_priority_label">Priority:</string>
+    <string name="issue_priority">priority</string>
+</resources>

@@ -1,0 +1,36 @@
+<resources>
+
+    <string name="tiles_column_name">COLUMN NAME</string>
+
+
+    <declare-styleable name="TileView">
+        <attr name="issueKey" format="string" />
+        <attr name="summary" format="string" />
+        <attr name="storyPoints" format="integer" />
+        <attr name="task" format="integer"/>
+        <attr name="priority" format="integer"/>
+        <attr name="assignee" format="string"/>
+
+        <attr name="android:ems" />
+
+    </declare-styleable>
+
+    <string name="tile_issue_key">ISSUE-KEY-42</string>
+    <string name="tile_summary">summary</string>
+    <string name="tile_story_points">--</string>
+    <string name="tile_task_description">feature</string>
+    <string name="tile_priority_description">priority</string>
+    <string name="tile_assignee_description">assignee</string>
+
+    <color name="tile_story_points">#61000000</color>
+
+    <string name="tile_select_action">
+        Select action
+    </string>
+    <string-array name="tile_select_actions">
+        <item>Detail</item>
+        <item>Move</item>
+        <item>Refresh</item>
+    </string-array>
+
+</resources>
