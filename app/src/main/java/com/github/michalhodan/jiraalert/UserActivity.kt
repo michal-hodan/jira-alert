@@ -44,7 +44,6 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         Database.bootstrap(applicationContext)
-        Database.dropDatabase()
         JIRADataViewModelFactory.bootstrap(url, authToken)
 
         viewModel = ViewModelProviders
@@ -52,7 +51,7 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .get(JIRADataViewModel::class.java)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Adding issue not yet supported", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
 
@@ -104,14 +103,19 @@ class UserActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
-            R.id.action_settings -> return true
-            else -> return super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                Database.dropDatabase()
+                viewModel.wipe()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         viewModel.boardIssueDataOfActiveSprint(item.itemId).observe(this, Observer {
+            linear_layout.removeAllViews()
             val configuration = it?.first ?: return@Observer
             val dataList = it.second
             configuration.columns.forEach { column ->

@@ -2,6 +2,7 @@ package com.github.michalhodan.jiraalert.storage
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.util.Log
 import com.github.michalhodan.jira.sdk.JIRA
 import com.github.michalhodan.jiraalert.database.*
 import com.github.michalhodan.jiraalert.database.User as UserEntity
@@ -18,7 +19,12 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
 
     private lateinit var boardsData: MutableLiveData<Map<Int, BoardEntity>>
 
-    private val sprintsData: Map<Int, MutableLiveData<Map<Int, SprintEntity>>> = mapOf()
+    private val sprintsData: HashMap<Int, MutableLiveData<Map<Int, SprintEntity>>> = hashMapOf()
+
+    fun wipe() {
+        usersData.clear()
+        sprintsData.clear()
+    }
 
     fun user(name: String) = usersData.getOrElse(name) {
         val userData = MutableLiveData<UserEntity>()
@@ -63,7 +69,7 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
         val sprintData = MutableLiveData<Map<Int, SprintEntity>>()
         GlobalScope.launch(Dispatchers.IO) {
             val data = with(database.sprint()) {
-                boardSprints(board.id).takeIf {
+                boardSprints().takeIf {
                     it.isNotEmpty()
                 } ?: jira.sprint.all(board.id).values.map {
                     SprintEntity(it.id, board.id, it.name, it.state)
@@ -80,7 +86,7 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
         val sprintData =  MutableLiveData<SprintEntity>()
         GlobalScope.launch(Dispatchers.IO) {
             val data = with(database.sprint()) {
-                boardSprints(board.id).takeIf {
+                boardSprints().takeIf {
                     it.isNotEmpty()
                 } ?: jira.sprint.all(board.id).values.map {
                     SprintEntity(it.id, board.id, it.name, it.state)
@@ -100,7 +106,10 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
                 } ?: jira.agileIssue.all(board.id, sprint.id).issues.map {
                     val storyPoints = it.fields.customfield_10006?.toInt()
 
-                    IssueEntity(it.id, board.id, sprint.id, it.key, it.fields.summary, storyPoints, it.fields.assignee.name, it.fields.creator.name, it.fields.issuetype.id, it.fields.project.id, it.fields.priority.id, it.fields.status.id)
+                    IssueEntity(it.id, board.id, sprint.id, it.key, it.fields.summary, it.fields.created,
+                        it.fields.description, storyPoints, it.fields.assignee.name, it.fields.creator.name,
+                        it.fields.issuetype.id, it.fields.project.id, it.fields.priority.id, it.fields.status.id
+                    )
                 }.also { insertAll(it) }
             }
             issueData.postValue(data.associate {
@@ -118,11 +127,11 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
                     Configuration(it.id, boardId, ArrayList(it.columnConfig.columns.map {
                         Column(it.name, it.statuses.map { it.id }, it.min, it.max)
                     }))
-                }.also { insert(it) }
+                }
             }
 
             val activeSprint = with(database.sprint()) {
-                boardSprints(boardId).takeIf {
+                boardSprints().takeIf {
                     it.isNotEmpty()
                 } ?: jira.sprint.all(boardId).values.map {
                     SprintEntity(it.id, boardId, it.name, it.state)
@@ -152,7 +161,11 @@ class JIRADataViewModel(private val jira: JIRA, private val database: Database):
 
                     val storyPoints = it.fields.customfield_10006?.toInt()
 
-                IssueEntity(it.id, boardId, activeSprint.id, it.key, it.fields.summary, storyPoints, it.fields.assignee.name, it.fields.creator.name, it.fields.issuetype.id, it.fields.project.id, it.fields.priority.id, it.fields.status.id)
+                IssueEntity(
+                    it.id, boardId, activeSprint.id, it.key, it.fields.summary, it.fields.created, it.fields.description,
+                    storyPoints, it.fields.assignee.name, it.fields.creator.name, it.fields.issuetype.id,
+                    it.fields.project.id, it.fields.priority.id, it.fields.status.id
+                )
 
                 }.also { insertAll(it) }
             }

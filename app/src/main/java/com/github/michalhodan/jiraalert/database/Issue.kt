@@ -42,6 +42,8 @@ data class Issue(
     @ColumnInfo(name = "sprint_id") var sprintId: Int,
     val key: String,
     val summary: String,
+    val created: String,
+    val description: String?,
     @ColumnInfo(name = "story_points") val storyPoints: Int?,
     @ColumnInfo(name = "assignee_name") val assignee: String,
     @ColumnInfo(name = "creator_name") val creator: String,
@@ -60,7 +62,7 @@ interface IssueDao {
     @Query("SELECT * FROM Issue WHERE board_id = :boardId AND sprint_id = :sprintId")
     fun boardSprintIssues(boardId: Int, sprintId: Int): List<Issue>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(issues: List<Issue>)
 
 }

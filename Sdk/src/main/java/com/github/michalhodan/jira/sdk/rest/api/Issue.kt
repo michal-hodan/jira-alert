@@ -26,6 +26,8 @@ class Issue(client: Client, parser: Parser): Rest.Api(client, parser) {
             val priority: Priority,
             val customfield_10006: Float?,
             val summary : String,
+            val description: String?,
+            val created: String,
             val assignee: Assignee,
             val creator: Assignee,
             val status: Status

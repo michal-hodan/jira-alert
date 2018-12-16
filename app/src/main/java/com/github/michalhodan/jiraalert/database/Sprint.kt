@@ -19,9 +19,12 @@ data class Sprint(
 @Dao
 interface SprintDao {
 
-    @Query("Select * FROM Sprint WHERE board_id = :boardId")
-    fun boardSprints(boardId: Int): List<Sprint>
+    @Query("SELECT * FROM Sprint WHERE id = :id")
+    fun retrieve(id: Int): Sprint?
 
-    @Insert
+    @Query("SELECT * FROM Sprint")
+    fun boardSprints(): List<Sprint>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(sprints: List<Sprint>)
 }
